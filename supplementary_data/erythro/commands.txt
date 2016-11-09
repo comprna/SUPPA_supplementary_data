@@ -59,10 +59,10 @@ python ~/suppa.py psiPerEvent -i ~/annotation/hg19_ensembl_events_all_events.ioe
 
 #5. Run SUPPA for obtaining the Differential splicing analysis
 	#5.1: Split the PSI and TPM files between the 2 conditions
-	~/scripts/split_file.R ~/erythro/Salmon/quantification/iso_tpm.txt SRR1057978,SRR1057983,SRR1057988 SRR1057982,SRR1057987,SRR1057992 ~/erythro/Salmon/quantification/SAMPLE_1_iso.tpm ~/erythro/Salmon/quantification/SAMPLE_2_iso.tpm 
-	~/scripts/split_file.R ~/erythro/SUPPA/events.psi SRR1057978,SRR1057983,SRR1057988 SRR1057982,SRR1057987,SRR1057992 ~/erythro/SUPPA/SAMPLE_1_events.psi ~/erythro/SUPPA/SAMPLE_2_events.psi
+	~/scripts/split_file.R ~/erythro/Salmon/quantification/iso_tpm.txt SRR1057978,SRR1057983,SRR1057988 SRR1057982,SRR1057987,SRR1057992 ~/erythro/Salmon/quantification/proe.tpm ~/erythro/Salmon/quantification/orthoe.tpm 
+	~/scripts/split_file.R ~/erythro/SUPPA/events.psi SRR1057978,SRR1057983,SRR1057988 SRR1057982,SRR1057987,SRR1057992 ~/erythro/SUPPA/proe.psi ~/erythro/SUPPA/orthoe.psi
 	#5.2: Run SUPPA
-	python ~/suppa.py diffSplice -m empirical -i ~/annotation/hg19_ensembl_events_all_events.ioe -e ~/erythro/Salmon/quantification/SAMPLE_1_iso.tpm ~/erythro/Salmon/quantification/SAMPLE_2_iso.tpm -p ~/erythro/SUPPA/SAMPLE_1_events.psi ~/erythro/SUPPA/SAMPLE_2_events.psi -o ~/erythro/SUPPA/CTRL_KD
+	python ~/suppa.py diffSplice -m empirical -i ~/annotation/hg19_ensembl_events_all_events.ioe -e ~/erythro/Salmon/quantification/SAMPLE_1_iso.tpm ~/erythro/Salmon/quantification/orthoe.tpm -p ~/erythro/SUPPA/proe.psi ~/erythro/SUPPA/orthoe.psi -o ~/erythro/SUPPA/proe_orthoe
 
 #########################
 #	TOPHAT		# 
