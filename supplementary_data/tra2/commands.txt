@@ -55,7 +55,6 @@ python ~/multipleFieldSelection.py -i ~/tra2/Salmon/quantification/*/quant.sf -k
 		cat $dir/$file >> $dir/hg19_ensembl_events_all_events.gtf
 	done
 
-
 #4. Run SUPPA for getting the psi values of the events:
 python ~/suppa.py psiPerEvent -i ~/annotation/hg19_ensembl_events_all_events.ioe -e ~/tra2/Salmon/quantification/iso_tpm.txt -o ~/tra2/SUPPA/events
 
