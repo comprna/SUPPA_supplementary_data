@@ -1,0 +1,117 @@
+################### folder names and associated input files #############
+# Data obtained from:
+# Pimentel, H. et al. A dynamic alternative splicing program regulates gene expression during terminal erythropoiesis. Nucleic Acids Res. 42, 4031–42 (2014).
+
+# Condition 1
+# proerythroblast replicates
+SRR1057978
+SRR1057983
+SRR1057988
+
+# Condition 2
+# orthochromatic erythroblasts replicates
+SRR1057982
+SRR1057987 
+SRR1057992
+
+
+#########################
+#	SALMON		# 
+#########################
+
+#1. Run the quantification with Salmon:
+	#1.1: Create the index: 
+	~/salmon-0.6.0/bin/salmon index -t hg19_EnsenmblGenes_sequence_ensenmbl.fasta -i ~/ensembl_hg19_index
+
+	#1.2: Do the quantification (6 samples):
+	~/salmon-0.6.0/bin/salmon quant -i ~/ensembl_hg19_index -l SF -r ~/SRR1057978.fastq -p 4 -o ~/erythro/Salmon/quantification/SRR1057978
+	~/salmon-0.6.0/bin/salmon quant -i ~/ensembl_hg19_index -l SF -r ~/SRR1057983.fastq -p 4 -o ~/erythro/Salmon/quantification/SRR1057983
+	~/salmon-0.6.0/bin/salmon quant -i ~/ensembl_hg19_index -l SF -r ~/SRR1057988.fastq -p 4 -o ~/erythro/Salmon/quantification/SRR1057988
+	~/salmon-0.6.0/bin/salmon quant -i ~/ensembl_hg19_index -l SF -r ~/SRR1057982.fastq -p 4 -o ~/erythro/Salmon/quantification/SRR1057982
+	~/salmon-0.6.0/bin/salmon quant -i ~/ensembl_hg19_index -l SF -r ~/SRR1057987.fastq -p 4 -o ~/erythro/Salmon/quantification/SRR1057987
+	~/salmon-0.6.0/bin/salmon quant -i ~/ensembl_hg19_index -l SF -r ~/SRR1057992.fastq -p 4 -o ~/erythro/Salmon/quantification/SRR1057992
+
+#########################
+#	SUPPA		#
+#########################
+
+#2. Extract the TPM values from the Salmon output
+python ~/multipleFieldSelection.py -i ~/erythro/Salmon/quantification/*/quant.sf -k 1 -f 4 -o ~/erythro/Salmon/quantification/iso_tpm.txt
+
+#3. Before running SUPPA, we need to calculate the AS events on the hg19 annotation
+	#3.1: Generate the events: 
+	python ~/suppa.py generateEvents -i ~/annotation/Homo_sapiens.GRCh37.75.formatted.gtf -o ~/annotation/hg19_ensembl_events -e SE SS MX RI FL
+	#3.2: Put all the ioe events in the same file:
+	dir="~/annotation/"
+	for file in $(ls $dir| grep hg19_ensembl_events | grep .ioe);do
+		echo "Processing $file..."
+		cat $dir/$file >> $dir/hg19_ensembl_events_all_events.ioe
+	done
+	#3.3: Put all the gtf events in the same file:
+	for file in $(ls $dir| grep hg19_ensembl_events | grep .gtf);do	
+		echo "Processing $file..."
+		cat $dir/$file >> $dir/hg19_ensembl_events_all_events.gtf
+	done
+
+
+#4. Run SUPPA for getting the psi values of the events:
+python ~/suppa.py psiPerEvent -i ~/annotation/hg19_ensembl_events_all_events.ioe -e ~/erythro/Salmon/quantification/iso_tpm.txt -o ~/erythro/SUPPA/events
+
+#5. Run SUPPA for obtaining the Differential splicing analysis
+	#5.1: Split the PSI and TPM files between the 2 conditions
+	~/scripts/split_file.R ~/erythro/Salmon/quantification/iso_tpm.txt SRR1057978,SRR1057983,SRR1057988 SRR1057982,SRR1057987,SRR1057992 ~/erythro/Salmon/quantification/proe.tpm ~/erythro/Salmon/quantification/orthoe.tpm 
+	~/scripts/split_file.R ~/erythro/SUPPA/events.psi SRR1057978,SRR1057983,SRR1057988 SRR1057982,SRR1057987,SRR1057992 ~/erythro/SUPPA/proe.psi ~/erythro/SUPPA/orthoe.psi
+	#5.2: Run SUPPA
+	python ~/suppa.py diffSplice -m empirical -i ~/annotation/hg19_ensembl_events_all_events.ioe -e ~/erythro/Salmon/quantification/SAMPLE_1_iso.tpm ~/erythro/Salmon/quantification/orthoe.tpm -p ~/erythro/SUPPA/proe.psi ~/erythro/SUPPA/orthoe.psi -o ~/erythro/SUPPA/proe_orthoe
+
+#########################
+#	TOPHAT		# 
+#########################
+
+#6. Allign the reads using TopHat
+export PATH=~/python-2.7/bin:~/bowtie2-2.2.4:$PATH
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/Homo_sapiens.GRCh37.75.formatted.gtf -o ~/erythro/TopHat/SRR1513329 ~/annotation/bowtieIndex/hg19/ ~/SRR1057978.fastq
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/Homo_sapiens.GRCh37.75.formatted.gtf -o ~/erythro/TopHat/SRR1513329 ~/annotation/bowtieIndex/hg19/ ~/SRR1057983.fastq
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/Homo_sapiens.GRCh37.75.formatted.gtf -o ~/erythro/TopHat/SRR1513329 ~/annotation/bowtieIndex/hg19/ ~/SRR1057988.fastq
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/Homo_sapiens.GRCh37.75.formatted.gtf -o ~/erythro/TopHat/SRR1513329 ~/annotation/bowtieIndex/hg19/ ~/SRR1057982.fastq
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/Homo_sapiens.GRCh37.75.formatted.gtf -o ~/erythro/TopHat/SRR1513329 ~/annotation/bowtieIndex/hg19/ ~/SRR1057987.fastq
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/Homo_sapiens.GRCh37.75.formatted.gtf -o ~/erythro/TopHat/SRR1513329 ~/annotation/bowtieIndex/hg19/ ~/SRR1057992.fastq
+
+#########################
+#	rMATS		#
+#########################
+
+#7. Get the AS events with rMATS of the TopHat output
+export PATH=~/python-2.7/bin:~/samtools-0.1.18:$PATH
+python ~/rMATS.3.2.5/RNASeq-MATS.py -b1 ~/erythro/TopHat/SRR1057978/SAMPLE_1_REP_1_accepted_hits.bam,~/erythro/TopHat/SRR1057983/SAMPLE_1_REP_2_accepted_hits.bam,~/erythro/TopHat/SRR1057988/SAMPLE_1_REP_3_accepted_hits.bam -b2 ~/erythro/TopHat/SRR1057982/SAMPLE_2_REP_1_accepted_hits.bam,~/erythro/TopHat/SRR1057987/SAMPLE_2_REP_2_accepted_hits.bam,~/erythro/TopHat/SRR1057992/SAMPLE_2_REP_3_accepted_hits.bam -gtf ~/annotation/Homo_sapiens.GRCh37.75.formatted.gtf -o ~/erythro/rMATS -t paired -len 101 -c 0.01)
+
+
+#########################
+#	MAJIQ		# 
+#########################
+
+#8. MAJIQ Builder
+majiq build ~/annotation/ensembl.hg19.gff3 -conf ~/erythro/MAJIQ/config_file.txt --nthreads 4 --output ~/erythro/MAJIQ/build
+
+#9. MAJIQ DeltaPSI
+majiq deltapsi -grp1 ~/erythro/MAJIQ/build/SAMPLE_1_REP_1_accepted_hits.majiq ~/erythro/MAJIQ/build/SAMPLE_1_REP_2_accepted_hits.majiq ~/erythro/MAJIQ/build/SAMPLE_1_REP_3_accepted_hits.majiq -grp2 ~/erythro/MAJIQ/build/SAMPLE_2_REP_1_accepted_hits.majiq ~/erythro/MAJIQ/build/SAMPLE_2_REP_2_accepted_hits.majiq ~/erythro/MAJIQ/build/SAMPLE_2_REP_3_accepted_hits.majiq --nthreads 8 --output ~/erythro/MAJIQ/dpsi_outdir --name SAMPLE_1 SAMPLE_2
+
+#10. VOILA DeltaPSI: 
+voila deltapsi ~/erythro/MAJIQ/dpsi_outdir/SAMPLE_1_SAMPLE_2.deltapsi_quantify.pickle -splice-graphs1 ~/erythro/MAJIQ/build/SAMPLE_1_REP_1_accepted_hits.splicegraph ~/erythro/MAJIQ/build/SAMPLE_1_REP_2_accepted_hits.splicegraph ~/erythro/MAJIQ/build/SAMPLE_1_REP_3_accepted_hits.splicegraph -splice-graphs2 ~/erythro/MAJIQ/build/SAMPLE_2_REP_1_accepted_hits.splicegraph ~/erythro/MAJIQ/build/SAMPLE_2_REP_2_accepted_hits.splicegraph ~/erythro/MAJIQ/build/SAMPLE_2_REP_3_accepted_hits.splicegraph -o ~/erythro/MAJIQ/voila_outdir)
+
+
+#########################
+#	DEXSEQ		#
+#########################
+
+python ~/erythro/DEXSeq/scripts/dexseq_count.py -f bam ~/annotation/Homo_sapiens.GRCh37.75.formatted.gff ~/erythro/TopHat/SRR1057978/SAMPLE_1_REP_1_accepted_hits.bam ~/erythro/DEXSeq/SAMPLE_1_REP_1_untreated1fb.txt
+python ~/erythro/DEXSeq/scripts/dexseq_count.py -f bam ~/annotation/Homo_sapiens.GRCh37.75.formatted.gff ~/erythro/TopHat/SRR1057983/SAMPLE_1_REP_2_accepted_hits.bam ~/erythro/DEXSeq/SAMPLE_1_REP_2_untreated1fb.txt
+python ~/erythro/DEXSeq/scripts/dexseq_count.py -f bam ~/annotation/Homo_sapiens.GRCh37.75.formatted.gff ~/erythro/TopHat/SRR1057988/SAMPLE_1_REP_3_accepted_hits.bam ~/erythro/DEXSeq/SAMPLE_1_REP_3_untreated1fb.txt
+python ~/erythro/DEXSeq/scripts/dexseq_count.py -f bam ~/annotation/Homo_sapiens.GRCh37.75.formatted.gff ~/erythro/TopHat/SRR1057982/SAMPLE_2_REP_1_accepted_hits.bam ~/erythro/DEXSeq/SAMPLE_2_REP_1_untreated1fb.txt
+python ~/erythro/DEXSeq/scripts/dexseq_count.py -f bam ~/annotation/Homo_sapiens.GRCh37.75.formatted.gff ~/erythro/TopHat/SRR1057987/SAMPLE_2_REP_2_accepted_hits.bam ~/erythro/DEXSeq/SAMPLE_2_REP_2_untreated1fb.txt
+python ~/erythro/DEXSeq/scripts/dexseq_count.py -f bam ~/annotation/Homo_sapiens.GRCh37.75.formatted.gff ~/erythro/TopHat/SRR1057992/SAMPLE_2_REP_3_accepted_hits.bam ~/erythro/DEXSeq/SAMPLE_2_REP_3_untreated1fb.txt
+
+#Run the next script in R with the workflow of DEXseq for calculating the differential exon usage
+Rscript ~/erythro/DEXSeq/scripts/DEXSeq_Calculation_erythro.R
+
+

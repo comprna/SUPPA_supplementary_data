@@ -1,0 +1,116 @@
+################### folder names and associated input files #############
+# Data obtained from:
+# "A circadian gene expression atlas in mammals: Implications for biology and medicine" Ray Zhanga,1, Nicholas F. Lahensa,1, Heather I. Ballancea, Michael E. Hughesb,2, and John B. Hogenescha,2014 
+
+# Condition 1
+# Mouse Cerevellum
+SRR1158546.sra --> Cer_CT28
+SRR1158548.sra --> Cer_CT40
+SRR1158550.sra --> Cer_CT52
+
+# Condition 2
+# Mouse Liver
+SRR1158578.sra --> Liv_CT28
+SRR1158580.sra --> Liv_CT40
+SRR1158582.sra --> Liv_CT52
+
+
+#########################
+#	SALMON		#
+#########################
+
+#1. Run the quantification with Salmon:
+	#1.1: Create the index: 
+	~/salmon-0.6.0/bin/salmon index -t ~/annotation/refseq_mm10_unique.fa -i ~/refseq_mm10_salmon_index
+
+	#1.2: Do the quantification (6 samples):
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_mm10_salmon_index -l ISF -1 ~/SRR1158546_1.fastq -2 ~/SRR1158546_2.fastq -p 4 -o ~/mouse/Salmon/quantification/SRR1158546
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_mm10_salmon_index -l ISF -1 ~/SRR1158548_1.fastq -2 ~/SRR1158548_2.fastq -p 4 -o ~/mouse/Salmon/quantification/SRR1158548
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_mm10_salmon_index -l ISF -1 ~/SRR1158550_1.fastq -2 ~/SRR1158550_2.fastq -p 4 -o ~/mouse/Salmon/quantification/SRR1158550
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_mm10_salmon_index -l ISF -1 ~/SRR1158578_1.fastq -2 ~/SRR1158578_2.fastq -p 4 -o ~/mouse/Salmon/quantification/SRR1158578
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_mm10_salmon_index -l ISF -1 ~/SRR1158580_1.fastq -2 ~/SRR1158580_2.fastq -p 4 -o ~/mouse/Salmon/quantification/SRR1158580
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_mm10_salmon_index -l ISF -1 ~/SRR1158582_1.fastq -2 ~/SRR1158582_2.fastq -p 4 -o ~/mouse/Salmon/quantification/SRR1158582
+
+#########################
+#	SUPPA		#
+#########################
+
+#2. Extract the TPM values from the Salmon output
+python ~/multipleFieldSelection.py -i ~/mouse/Salmon/quantification/*/quant.sf -k 1 -f 4 -o ~/mouse/Salmon/quantification/iso_tpm.txt
+
+#3. Before running SUPPA, we need to calculate the AS events on the hg19 annotation
+	#3.1: Generate the events: 
+	python ~/suppa.py generateEvents -i ~/annotation/refseq_mm10.formatted.gtf -o ~/annotation/refseq_mm10.events -e SE SS MX RI FL
+	#3.2: Put all the ioe events in the same file:
+	dir="~/annotation/"
+	for file in $(ls $dir| grep refseq_mm10.events | grep .ioe);do
+		echo "Processing $file..."
+		cat $dir/$file >> $dir/refseq_mm10.events_formatted.ioe
+	done
+	#3.3: Put all the gtf events in the same file:
+	for file in $(ls $dir| grep refseq_mm10.events | grep .gtf);do	
+		echo "Processing $file..."
+		cat $dir/$file >> $dir/refseq_mm10.events_formatted.gtf
+	done
+
+#4. Run SUPPA for getting the psi values of the events:
+python ~/suppa.py psiPerEvent -i ~/annotation/refseq_mm10.events_formatted.ioe -e ~/mouse/Salmon/quantification/iso_tpm.txt -o ~/mouse/SUPPA/events
+
+#5. Run SUPPA for obtaining the Differential splicing analysis
+	#11.1: Split the PSI and TPM files between the 2 conditions
+	~/scripts/split_file.R ~/mouse/Salmon/quantification/iso_tpm.txt SRR1158546,SRR1158548,SRR1158550 SRR1158578,SRR1158580,SRR1158582 ~/mouse/Salmon/quantification/mouse_Cer28_40_52_iso.tpm ~/mouse/Salmon/quantification/mouse_Liv28_40_52_iso.tpm      
+	~/scripts/split_file.R ~/mouse/SUPPA/events.psi SRR1158546,SRR1158548,SRR1158550 SRR1158578,SRR1158580,SRR1158582 ~/mouse/SUPPA/mouse_Cer28_40_52_events.psi ~/mouse/SUPPA/mouse_Liv28_40_52_events.psi
+	#11.2: Run SUPPA
+	python ~/suppa.py diffSplice -m empirical -i ~/annotation/refseq_mm10.events_formatted.ioe -e ~/mouse/Salmon/quantification/mouse_Cer28_40_52_iso.tpm ~/mouse/Salmon/quantification/mouse_Liv28_40_52_iso.tpm -p ~/mouse/SUPPA/mouse_Cer28_40_52_events.psi ~/mouse/SUPPA/mouse_Liv28_40_52_events.psi -o ~/mouse/SUPPA/mouse_Cer_Liv
+
+#########################
+#	TOPHAT		# 
+#########################
+
+#6. Allign the reads using TopHat
+export PATH=~/python-2.7/bin:~/bowtie2-2.2.4:$PATH
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/refseq_mm10.events_formatted.gtf -o ~/mouse/TopHat/SRR1158546 ~/annotation/bowtieIndex/mm10/ ~/SRR1158546_1.fastq ~/SRR1158546_2.fastq
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/refseq_mm10.events_formatted.gtf -o ~/mouse/TopHat/SRR1158548 ~/annotation/bowtieIndex/mm10/ ~/SRR1158548_1.fastq ~/SRR1158548_2.fastq
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/refseq_mm10.events_formatted.gtf -o ~/mouse/TopHat/SRR1158550 ~/annotation/bowtieIndex/mm10/ ~/SRR1158550_1.fastq ~/SRR1158550_2.fastq
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/refseq_mm10.events_formatted.gtf -o ~/mouse/TopHat/SRR1158578 ~/annotation/bowtieIndex/mm10/ ~/SRR1158578_1.fastq ~/SRR1158578_2.fastq
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/refseq_mm10.events_formatted.gtf -o ~/mouse/TopHat/SRR1158580 ~/annotation/bowtieIndex/mm10/ ~/SRR1158580_1.fastq ~/SRR1158580_2.fastq
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/refseq_mm10.events_formatted.gtf -o ~/mouse/TopHat/SRR1158582 ~/annotation/bowtieIndex/mm10/ ~/SRR1158582_1.fastq ~/SRR1158582_2.fastq
+
+#########################
+#	rMATS		#
+#########################
+
+#7. Get the AS events with rMATS of the TopHat output
+export PATH=~/python-2.7/bin:~/samtools-0.1.18:$PATH
+python ~/rMATS.3.2.5/RNASeq-MATS.py -b1 ~/mouse/TopHat/SRR1158546/SAMPLE_1_REP_1_accepted_hits.bam,~/mouse/TopHat/SRR1158548/SAMPLE_1_REP_2_accepted_hits.bam,~/mouse/TopHat/SRR1158550/SAMPLE_1_REP_3_accepted_hits.bam -b2 ~/mouse/TopHat/SRR1158578/SAMPLE_2_REP_1_accepted_hits.bam,~/mouse/TopHat/SRR1158580/SAMPLE_2_REP_2_accepted_hits.bam,~/mouse/TopHat/SRR1158582/SAMPLE_2_REP_3_accepted_hits.bam -gtf ~/annotation/refseq_mm10.events_formatted.gtf -o ~/mouse/rMATS -t paired -len 101 -c 0.01)
+
+
+#########################
+#	MAJIQ		# 
+#########################
+
+#8. MAJIQ Builder
+majiq build ~/annotation/refseq_hg19.formatted.gff -conf ~/mouse/MAJIQ/config_file.txt --nthreads 4 --output ~/mouse/MAJIQ/build
+
+#9. MAJIQ DeltaPSI
+majiq deltapsi -grp1 ~/mouse/MAJIQ/build/SAMPLE_1_REP_1_accepted_hits.majiq ~/mouse/MAJIQ/build/SAMPLE_1_REP_2_accepted_hits.majiq ~/mouse/MAJIQ/build/SAMPLE_1_REP_3_accepted_hits.majiq -grp2 ~/mouse/MAJIQ/build/SAMPLE_2_REP_1_accepted_hits.majiq ~/mouse/MAJIQ/build/SAMPLE_2_REP_2_accepted_hits.majiq ~/mouse/MAJIQ/build/SAMPLE_2_REP_3_accepted_hits.majiq --nthreads 8 --output ~/mouse/MAJIQ/dpsi_outdir --name SAMPLE_1 SAMPLE_2
+
+#10. VOILA DeltaPSI: 
+voila deltapsi ~/mouse/MAJIQ/dpsi_outdir/SAMPLE_1_SAMPLE_2.deltapsi_quantify.pickle -splice-graphs1 ~/mouse/MAJIQ/build/SAMPLE_1_REP_1_accepted_hits.splicegraph ~/mouse/MAJIQ/build/SAMPLE_1_REP_2_accepted_hits.splicegraph ~/mouse/MAJIQ/build/SAMPLE_1_REP_3_accepted_hits.splicegraph -splice-graphs2 ~/mouse/MAJIQ/build/SAMPLE_2_REP_1_accepted_hits.splicegraph ~/mouse/MAJIQ/build/SAMPLE_2_REP_2_accepted_hits.splicegraph ~/mouse/MAJIQ/build/SAMPLE_2_REP_3_accepted_hits.splicegraph -o ~/mouse/MAJIQ/voila_outdir)
+
+
+#########################
+#	DEXSEQ		#
+#########################
+
+python ~/mouse/DEXSeq/scripts/dexseq_count.py -f bam ~/annotation/refseq_hg19.formatted.gff ~/mouse/TopHat/SRR1158546/SAMPLE_1_REP_1_accepted_hits.bam ~/mouse/DEXSeq/SAMPLE_1_REP_1_untreated1fb.txt
+python ~/mouse/DEXSeq/scripts/dexseq_count.py -f bam ~/annotation/refseq_hg19.formatted.gff ~/mouse/TopHat/SRR1158548/SAMPLE_1_REP_2_accepted_hits.bam ~/mouse/DEXSeq/SAMPLE_1_REP_2_untreated1fb.txt
+python ~/mouse/DEXSeq/scripts/dexseq_count.py -f bam ~/annotation/refseq_hg19.formatted.gff ~/mouse/TopHat/SRR1158550/SAMPLE_1_REP_3_accepted_hits.bam ~/mouse/DEXSeq/SAMPLE_1_REP_3_untreated1fb.txt
+python ~/mouse/DEXSeq/scripts/dexseq_count.py -f bam ~/annotation/refseq_hg19.formatted.gff ~/mouse/TopHat/SRR1158578/SAMPLE_2_REP_1_accepted_hits.bam ~/mouse/DEXSeq/SAMPLE_2_REP_1_untreated1fb.txt
+python ~/mouse/DEXSeq/scripts/dexseq_count.py -f bam ~/annotation/refseq_hg19.formatted.gff ~/mouse/TopHat/SRR1158580/SAMPLE_2_REP_2_accepted_hits.bam ~/mouse/DEXSeq/SAMPLE_2_REP_2_untreated1fb.txt
+python ~/mouse/DEXSeq/scripts/dexseq_count.py -f bam ~/annotation/refseq_hg19.formatted.gff ~/mouse/TopHat/SRR1158582/SAMPLE_2_REP_3_accepted_hits.bam ~/mouse/DEXSeq/SAMPLE_2_REP_3_untreated1fb.txt
+
+#Run the next script in R with the workflow of DEXseq for calculating the differential exon usage
+Rscript ~/mouse/DEXSeq/scripts/DEXSeq_Calculation_mouse.R
+
+

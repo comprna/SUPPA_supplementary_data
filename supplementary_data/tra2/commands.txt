@@ -23,7 +23,7 @@ SRR1513334
 
 #1. Run the quantification with Salmon:
 	#1.1: Create the index: 
-	~/salmon-0.6.0/bin/salmon index -t hg19_EnsenmblGenes_sequence_ensenmbl.fasta -i ~/ensembl_hg19_index
+	~/salmon-0.6.0/bin/salmon index -t ~/annotation/hg19_EnsenmblGenes_sequence_ensenmbl.fasta -i ~/ensembl_hg19_index
 
 	#1.2: Do the quantification (6 samples):
 	~/salmon-0.6.0/bin/salmon quant -i ~/ensembl_hg19_index -l ISF -1 ~/SRR1513329_1.fastq -2 ~/SRR1513329_2.fastq -p 4 -o ~/tra2/Salmon/quantification/SRR1513329
