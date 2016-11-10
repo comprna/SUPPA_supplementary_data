@@ -1,0 +1,81 @@
+################### folder names and associated input files #############
+# Data obtained from:
+# Cole, B. S. et al. Global analysis of physical and functional RNA targets of hnRNP L reveals distinct sequence and epigenetic features of repressed and enhanced exons. RNA 21, 2053–66 (2015).
+
+# Condition 1
+# stimulated Jurkat T-cells
+SRR2061036.sra
+SRR2061041.sra 
+
+# Condition 2
+# unstimulated Jurkat T-cells
+SRR2060068.sra
+SRR2060071.sra
+
+#########################
+#	SALMON		#
+#########################
+
+#1. Run the quantification with Salmon:
+	#1.1: Create the index: 
+	~/salmon-0.6.0/bin/salmon index -t ~/annotation/refseq_hg19_unique.fa -i ~/refseq_hg19_salmon_index
+
+	#1.2: Do the quantification (4 samples):
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR2061036_1.fastq -2 ~/SRR2061036_2.fastq -p 4 -o ~/jurkat/Salmon/quantification/SRR2061036
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR2061041_1.fastq -2 ~/SRR2061041_2.fastq -p 4 -o ~/jurkat/Salmon/quantification/SRR2061041
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR2060068_1.fastq -2 ~/SRR2060068_2.fastq -p 4 -o ~/jurkat/Salmon/quantification/SRR2060068
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR2060071_1.fastq -2 ~/SRR2060071_2.fastq -p 4 -o ~/jurkat/Salmon/quantification/SRR2060071
+
+#########################
+#	SUPPA		#
+#########################
+
+#2. Extract the TPM values from the Salmon output
+python ~/multipleFieldSelection.py -i ~/jurkat/Salmon/quantification/*/quant.sf -k 1 -f 4 -o ~/jurkat/Salmon/quantification/iso_tpm.txt
+
+#3. Before running SUPPA, we need to calculate the AS events on the hg19 annotation
+	#3.1: Generate the events: 
+	python ~/suppa.py generateEvents -i ~/annotation/refseq_hg19.formatted.gtf -o ~/annotation/refseq_hg19.events -e SE SS MX RI FL
+	#3.2: Put all the ioe events in the same file:
+	dir="~/annotation/"
+	for file in $(ls $dir| grep refseq_hg19.events | grep .ioe);do
+		echo "Processing $file..."
+		cat $dir/$file >> $dir/refseq_annotation_hg19.events_formatted.ioe
+	done
+	#3.3: Put all the gtf events in the same file:
+	for file in $(ls $dir| grep refseq_hg19.events | grep .gtf);do	
+		echo "Processing $file..."
+		cat $dir/$file >> $dir/refseq_hg19.events_formatted.gtf
+	done
+
+#4. Run SUPPA for getting the psi values of the events:
+python ~/suppa.py psiPerEvent -i ~/annotation/refseq_annotation_hg19.events_formatted.ioe -e ~/jurkat/Salmon/quantification/iso_tpm.txt -o ~/jurkat/SUPPA/events
+
+#5. Run SUPPA for obtaining the Differential splicing analysis
+	#11.1: Split the PSI and TPM files between the 2 conditions
+	~/scripts/split_file.R ~/jurkat/Salmon/quantification/iso_tpm.txt SRR2061036,SRR2061041 SRR2060068,SRR2060071 ~/jurkat/Salmon/quantification/jurkat_stimulated.tpm ~/jurkat/Salmon/quantification/jurkat_unstimulated.tpm      
+	~/scripts/split_file.R ~/jurkat/SUPPA/events.psi SRR2061036,SRR2061041 SRR2060068,SRR2060071 ~/jurkat/SUPPA/jurkat_stimulated.psi ~/jurkat/SUPPA/jurkat_unstimulated.psi
+	#11.2: Run SUPPA
+	python ~/suppa.py diffSplice -m empirical -i ~/annotation/refseq_annotation_hg19.events_formatted.ioe -e ~/jurkat/Salmon/quantification/jurkat_stimulated.tpm ~/jurkat/Salmon/quantification/jurkat_unstimulated.tpm -p ~/jurkat/SUPPA/jurkat_stimulated.psi ~/jurkat/SUPPA/jurkat_unstimulated.psi -o ~/jurkat/SUPPA/jurkat_unstimulated_stimulated
+
+#########################
+#	TOPHAT		# 
+#########################
+
+#6. Allign the reads using TopHat
+export PATH=~/python-2.7/bin:~/bowtie2-2.2.4:$PATH
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/refseq_hg19.events_formatted.gtf -o ~/jurkat/TopHat/SRR1158546 ~/annotation/bowtieIndex/hg19/ ~/SRR1158546_1.fastq ~/SRR1158546_2.fastq
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/refseq_hg19.events_formatted.gtf -o ~/jurkat/TopHat/SRR1158548 ~/annotation/bowtieIndex/hg19/ ~/SRR1158548_1.fastq ~/SRR1158548_2.fastq
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/refseq_hg19.events_formatted.gtf -o ~/jurkat/TopHat/SRR1158550 ~/annotation/bowtieIndex/hg19/ ~/SRR1158550_1.fastq ~/SRR1158550_2.fastq
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/refseq_hg19.events_formatted.gtf -o ~/jurkat/TopHat/SRR1158578 ~/annotation/bowtieIndex/hg19/ ~/SRR1158578_1.fastq ~/SRR1158578_2.fastq
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/refseq_hg19.events_formatted.gtf -o ~/jurkat/TopHat/SRR1158580 ~/annotation/bowtieIndex/hg19/ ~/SRR1158580_1.fastq ~/SRR1158580_2.fastq
+~/tophat-2.1.0/tophat --no-coverage-search --no-novel-indels -a 8 -m 0 -I 300000 -p 8 -g 20 --library-type fr-unstranded --no-novel-indels -G ~/annotation/refseq_hg19.events_formatted.gtf -o ~/jurkat/TopHat/SRR1158582 ~/annotation/bowtieIndex/hg19/ ~/SRR1158582_1.fastq ~/SRR1158582_2.fastq
+
+#########################
+#	rMATS		#
+#########################
+
+#7. Get the AS events with rMATS of the TopHat output
+export PATH=~/python-2.7/bin:~/samtools-0.1.18:$PATH
+python ~/rMATS.3.2.5/RNASeq-MATS.py -b1 ~/jurkat/TopHat/SRR1158546/SAMPLE_1_REP_1_accepted_hits.bam,~/jurkat/TopHat/SRR1158548/SAMPLE_1_REP_2_accepted_hits.bam,~/jurkat/TopHat/SRR1158550/SAMPLE_1_REP_3_accepted_hits.bam -b2 ~/jurkat/TopHat/SRR1158578/SAMPLE_2_REP_1_accepted_hits.bam,~/jurkat/TopHat/SRR1158580/SAMPLE_2_REP_2_accepted_hits.bam,~/jurkat/TopHat/SRR1158582/SAMPLE_2_REP_3_accepted_hits.bam -gtf ~/annotation/refseq_hg19.events_formatted.gtf -o ~/jurkat/rMATS -t paired -len 101 -c 0.01)
+
