@@ -1,0 +1,46 @@
+################### folder names and associated input files #############
+# Data obtained from:
+# "Rapid neurogenesis through transcriptional activation in human stem cells" Busskamp V, Lewis NE, Guye P, et al. Molecular Systems Biology. 2014
+
+#########################
+#	SALMON		#
+#########################
+
+#1. Run the quantification with Salmon:
+	#1.1: Create the index: 
+	~/salmon-0.6.0/bin/salmon index -t ~/annotation/hg19_EnsenmblGenes_sequence_ensenmbl.fasta.fa -i ~/Ensembl_hg19_salmon_index
+
+	#1.2: Do the quantification (12 samples):
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554436_1.fastq -2 ~/SRR1554436_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554436
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554437_1.fastq -2 ~/SRR1554437_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554437
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554438_1.fastq -2 ~/SRR1554438_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554438
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554439_1.fastq -2 ~/SRR1554439_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554439
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554440_1.fastq -2 ~/SRR1554440_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554440
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554441_1.fastq -2 ~/SRR1554441_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554441
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554442_1.fastq -2 ~/SRR1554442_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554442
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554443_1.fastq -2 ~/SRR1554443_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554443
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554444_1.fastq -2 ~/SRR1554444_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554444
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554445_1.fastq -2 ~/SRR1554445_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554445
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554446_1.fastq -2 ~/SRR1554446_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554446
+	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554447_1.fastq -2 ~/SRR1554447_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554447
+
+#########################
+#	SUPPA		#
+#########################
+
+#2. Extract the TPM values from the Salmon output
+python ~/multipleFieldSelection.py -i ~/Busskamp/Salmon/quantification/*/quant.sf -k 1 -f 4 -o ~/Busskamp/Salmon/quantification/iso_tpm.txt
+
+#3. Use the annotation already calculated for tra2 and erythro
+
+#4. Run SUPPA for getting the psi values of the events:
+python ~/suppa.py psiPerEvent -i ~/annotation/hg19_ensembl_events_all_events.ioe -e ~/Busskamp/Salmon/quantification/iso_tpm.txt -o ~/Busskamp/SUPPA/Busskamp_events
+
+#5. Run SUPPA for obtaining the Differential splicing analysis
+	#5.1: Split the PSI and TPM files between the 4 conditions
+	~/scripts/split_file.R ~/Busskamp/Salmon/quantification/iso_tpm.txt SRR1554436,SRR1554437,SRR1554438 SRR1554439,SRR1554440,SRR1554441 ~/Busskamp/Salmon/quantification/Busskamp_Day_0_iso.tpm ~/Busskamp/Salmon/quantification/Busskamp_Day_1_iso.tpm 
+	~/scripts/split_file.R ~/Busskamp/Salmon/quantification/iso_tpm.txt SRR1554442,SRR1554443,SRR1554444 SRR1554445,SRR1554446,SRR1554447 ~/Busskamp/Salmon/quantification/Busskamp_Day_2_iso.tpm ~/Busskamp/Salmon/quantification/Busskamp_Day_3_iso.tpm          
+	~/scripts/split_file.R ~/Busskamp/SUPPA/events.psi SRR1554436,SRR1554437,SRR1554438 SRR1554439,SRR1554440,SRR1554441 ~/Busskamp/SUPPA/Busskamp_Day_0_events.psi ~/Busskamp/SUPPA/Busskamp_Day_1_events.psi
+	~/scripts/split_file.R ~/Busskamp/SUPPA/events.psi SRR1554442,SRR1554443,SRR1554444 SRR1554445,SRR1554446,SRR1554447 ~/Busskamp/SUPPA/Busskamp_Day_2_events.psi ~/Busskamp/SUPPA/Busskamp_Day_3_events.psi
+	#5.2: Run SUPPA
+	python ~/suppa.py diffSplice -m empirical -i ~/annotation/hg19_ensembl_events_all_events.ioe -e ~/Busskamp/Salmon/quantification/Busskamp_Day_0_iso.tpm ~/Busskamp/Salmon/quantification/Busskamp_Day_1_iso.tpm ~/Busskamp/Salmon/quantification/Busskamp_Day_2_iso.tpm ~/Busskamp/Salmon/quantification/Busskamp_Day_3_iso.tpm -p ~/Busskamp/Salmon/quantification/Busskamp_Day_0_events.psi ~/Busskamp/Salmon/quantification/Busskamp_Day_1_events.psi ~/Busskamp/Salmon/quantification/Busskamp_Day_2_events.psi ~/Busskamp/Salmon/quantification/Busskamp_Day_3_events.psi -o ~/Busskamp/SUPPA/Busskamp_multicondition
