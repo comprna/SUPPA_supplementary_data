@@ -1,0 +1,40 @@
+################### folder names and associated input files #############
+# Data obtained from:
+# Best, A. et al. Human Tra2 proteins jointly control a CHEK1 splicing switch among alternative and constitutive target exons. Nat. Commun. 5, 4760 (2014).
+
+# Condition 1
+# negative control siRNA treated MDA-MB-231 cells (ctrl)
+SRR1513329
+SRR1513330
+SRR1513331
+
+#################
+#	RSEM	#
+#################
+
+###1. Use the quantificationh method of RSEM on the original fastq files and 
+
+	#1.1. Generate the reference from the annotation file (refseq)
+	~/RSEM-1.2.29/bin/rsem-prepare-reference --bowtie2 --bowtie2-path ~/bowtie2-2.2.4 ~/annotation/refseq_hg19_unique.fa ~/tra2_simulated_reads/rsem_reference
+	
+	#1.2. Get the transcript quantification (3 samples)
+	~/RSEM-1.2.29/rsem-calculate-expression --bowtie2 --bowtie2-path ~/bowtie2-2.2.4 -p 8 --estimate-rspd --append-names --paired-end ~/SRR1513329_1.fastq ~/SRR1513329_2.fastq ~/tra2_simulated_reads/rsem_reference ~/tra2_simulated_reads/quantification/SRR1513329
+
+	~/RSEM-1.2.29/rsem-calculate-expression --bowtie2 --bowtie2-path ~/bowtie2-2.2.4 -p 8 --estimate-rspd --append-names --paired-end ~/SRR1513330_1.fastq ~/SRR1513330_2.fastq ~/tra2_simulated_reads/rsem_reference ~/tra2_simulated_reads/quantification/SRR1513330
+
+	~/RSEM-1.2.29/rsem-calculate-expression --bowtie2 --bowtie2-path ~/bowtie2-2.2.4 -p 8 --estimate-rspd --append-names --paired-end ~/SRR1513331_1.fastq ~/SRR1513331_2.fastq ~/tra2_simulated_reads/rsem_reference ~/tra2_simulated_reads/quantification/SRR1513331
+
+
+###2. Simulate the reads
+
+#For running 120M reads
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513329.model ~/simulated_reads/SRR1513329.tpm 0.0987 120000000 ~/simulated_reads/fastqs/SRR1513329 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513330.model ~/simulated_reads/SRR1513330.tpm 0.0987 120000000 ~/simulated_reads/fastqs/SRR1513330 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513331.model ~/simulated_reads/SRR1513331.tpm 0.0987 120000000 ~/simulated_reads/fastqs/SRR1513331 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513329.model ~/simulated_reads/SRR1513329_switched.tpm 0.0987 120000000 ~/simulated_reads/fastqs/SRR1513329_switched --seed 0
+~/RSEM-1.2.30/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513330.model ~/simulated_reads/SRR1513330_switched.tpm 0.0987 120000000 ~/simulated_reads/fastqs/SRR1513330_switched --seed 0
+~/RSEM-1.2.31/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513331.model ~/simulated_reads/SRR1513331_switched.tpm 0.0987 120000000 ~/simulated_reads/fastqs/SRR1513331_switched --seed 0
+
+
+
+#The commands run for SUPPA, rMATS, DEXSeq and MAJIQ are the same as for tra2/commands.txt
