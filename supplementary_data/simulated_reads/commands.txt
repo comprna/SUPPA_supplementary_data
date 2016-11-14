@@ -2,15 +2,16 @@
 # Data obtained from:
 # Best, A. et al. Human Tra2 proteins jointly control a CHEK1 splicing switch among alternative and constitutive target exons. Nat. Commun. 5, 4760 (2014).
 
-# Condition 1
 # negative control siRNA treated MDA-MB-231 cells (ctrl)
 SRR1513329
 SRR1513330
 SRR1513331
 
-#################
-#	RSEM	#
-#################
+#########################################
+#	Benchmark_different_depths	#
+#########################################
+
+#Using RSEM, we simulate reads at different depths and test how this affects the performance of each method
 
 ###1. Use the quantificationh method of RSEM on the original fastq files and 
 
@@ -25,14 +26,102 @@ SRR1513331
 
 ###2. Simulate the reads
 
-#For running 120M reads
-~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513329.model ~/simulated_reads/SRR1513329.tpm 0.0987 120000000 ~/simulated_reads/fastqs/SRR1513329 --seed 0
-~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513330.model ~/simulated_reads/SRR1513330.tpm 0.0987 120000000 ~/simulated_reads/fastqs/SRR1513330 --seed 0
-~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513331.model ~/simulated_reads/SRR1513331.tpm 0.0987 120000000 ~/simulated_reads/fastqs/SRR1513331 --seed 0
-~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513329.model ~/simulated_reads/SRR1513329_switched.tpm 0.0987 120000000 ~/simulated_reads/fastqs/SRR1513329_switched --seed 0
-~/RSEM-1.2.30/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513330.model ~/simulated_reads/SRR1513330_switched.tpm 0.0987 120000000 ~/simulated_reads/fastqs/SRR1513330_switched --seed 0
-~/RSEM-1.2.31/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513331.model ~/simulated_reads/SRR1513331_switched.tpm 0.0987 120000000 ~/simulated_reads/fastqs/SRR1513331_switched --seed 0
+#For simulating 120 million reads
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513329.model ~/simulated_reads/SRR1513329.tpm 0.0987 120000000 ~/simulated_reads/fastqs/120M/SRR1513329 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513330.model ~/simulated_reads/SRR1513330.tpm 0.0987 120000000 ~/simulated_reads/fastqs/120M/SRR1513330 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513331.model ~/simulated_reads/SRR1513331.tpm 0.0987 120000000 ~/simulated_reads/fastqs/120M/SRR1513331 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513329.model ~/simulated_reads/SRR1513329_switched.tpm 0.0987 120000000 ~/simulated_reads/fastqs/120M/SRR1513329_switched --seed 0
+~/RSEM-1.2.30/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513330.model ~/simulated_reads/SRR1513330_switched.tpm 0.0987 120000000 ~/simulated_reads/fastqs/120M/SRR1513330_switched --seed 0
+~/RSEM-1.2.31/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513331.model ~/simulated_reads/SRR1513331_switched.tpm 0.0987 120000000 ~/simulated_reads/fastqs/120M/SRR1513331_switched --seed 0
+
+#For simulating 60 million reads
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513329.model ~/simulated_reads/SRR1513329.tpm 0.0987 60000000 ~/simulated_reads/fastqs/60M/SRR1513329 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513330.model ~/simulated_reads/SRR1513330.tpm 0.0987 60000000 ~/simulated_reads/fastqs/60M/SRR1513330 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513331.model ~/simulated_reads/SRR1513331.tpm 0.0987 60000000 ~/simulated_reads/fastqs/60M/SRR1513331 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513329.model ~/simulated_reads/SRR1513329_switched.tpm 0.0987 60000000 ~/simulated_reads/fastqs/60M/SRR1513329_switched --seed 0
+~/RSEM-1.2.30/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513330.model ~/simulated_reads/SRR1513330_switched.tpm 0.0987 60000000 ~/simulated_reads/fastqs/60M/SRR1513330_switched --seed 0
+~/RSEM-1.2.31/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513331.model ~/simulated_reads/SRR1513331_switched.tpm 0.0987 60000000 ~/simulated_reads/fastqs/60M/SRR1513331_switched --seed 0
+
+#For simulating 25 million reads
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513329.model ~/simulated_reads/SRR1513329.tpm 0.0987 25000000 ~/simulated_reads/fastqs/25M/SRR1513329 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513330.model ~/simulated_reads/SRR1513330.tpm 0.0987 25000000 ~/simulated_reads/fastqs/25M/SRR1513330 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513331.model ~/simulated_reads/SRR1513331.tpm 0.0987 25000000 ~/simulated_reads/fastqs/25M/SRR1513331 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513329.model ~/simulated_reads/SRR1513329_switched.tpm 0.0987 25000000 ~/simulated_reads/fastqs/25M/SRR1513329_switched --seed 0
+~/RSEM-1.2.30/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513330.model ~/simulated_reads/SRR1513330_switched.tpm 0.0987 25000000 ~/simulated_reads/fastqs/25M/SRR1513330_switched --seed 0
+~/RSEM-1.2.31/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513331.model ~/simulated_reads/SRR1513331_switched.tpm 0.0987 25000000 ~/simulated_reads/fastqs/25M/SRR1513331_switched --seed 0
+
+#For simulating 10 million reads
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513329.model ~/simulated_reads/SRR1513329.tpm 0.0987 10000000 ~/simulated_reads/fastqs/10M/SRR1513329 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513330.model ~/simulated_reads/SRR1513330.tpm 0.0987 10000000 ~/simulated_reads/fastqs/10M/SRR1513330 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513331.model ~/simulated_reads/SRR1513331.tpm 0.0987 10000000 ~/simulated_reads/fastqs/10M/SRR1513331 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513329.model ~/simulated_reads/SRR1513329_switched.tpm 0.0987 10000000 ~/simulated_reads/fastqs/10M/SRR1513329_switched --seed 0
+~/RSEM-1.2.30/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513330.model ~/simulated_reads/SRR1513330_switched.tpm 0.0987 10000000 ~/simulated_reads/fastqs/10M/SRR1513330_switched --seed 0
+~/RSEM-1.2.31/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513331.model ~/simulated_reads/SRR1513331_switched.tpm 0.0987 10000000 ~/simulated_reads/fastqs/10M/SRR1513331_switched --seed 0
+
+#For simulating 5 million reads
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513329.model ~/simulated_reads/SRR1513329.tpm 0.0987 5000000 ~/simulated_reads/fastqs/5M/SRR1513329 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513330.model ~/simulated_reads/SRR1513330.tpm 0.0987 5000000 ~/simulated_reads/fastqs/5M/SRR1513330 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513331.model ~/simulated_reads/SRR1513331.tpm 0.0987 5000000 ~/simulated_reads/fastqs/5M/SRR1513331 --seed 0
+~/RSEM-1.2.29/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513329.model ~/simulated_reads/SRR1513329_switched.tpm 0.0987 5000000 ~/simulated_reads/fastqs/5M/SRR1513329_switched --seed 0
+~/RSEM-1.2.30/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513330.model ~/simulated_reads/SRR1513330_switched.tpm 0.0987 5000000 ~/simulated_reads/fastqs/5M/SRR1513330_switched --seed 0
+~/RSEM-1.2.31/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513331.model ~/simulated_reads/SRR1513331_switched.tpm 0.0987 5000000 ~/simulated_reads/fastqs/5M/SRR1513331_switched --seed 0
+
+
+#3.The commands ran for SUPPA, rMATS, DEXSeq and MAJIQ are the same as for tra2/commands.txt. In this case, the two conditions are the switched vs the non_switched TRA2 files
 
 
 
-#The commands run for SUPPA, rMATS, DEXSeq and MAJIQ are the same as for tra2/commands.txt
+#########################################
+#	Benchmark_different_lengths	#
+#########################################
+
+#At a 25 million reads depth, we simulate reads and trimm them at different lengths. Then, we study how this affects the performance of the methods
+
+#1. Using Cutadapt for trimming the reads
+
+#Trimm the reads at 25 nucleotides:
+cutadapt -u -77 ~/simulated_reads/fastqs/25M/SRR1513329_1.fq -o ~/simulated_reads/fastqs/25nt/SRR1513329_1.fq 
+cutadapt -u -77 ~/simulated_reads/fastqs/25M/SRR1513329_2.fq -o ~/simulated_reads/fastqs/25nt/SRR1513329_2.fq
+cutadapt -u -77 ~/simulated_reads/fastqs/25M/SRR1513330_1.fq -o ~/simulated_reads/fastqs/25nt/SRR1513329_1.fq 
+cutadapt -u -77 ~/simulated_reads/fastqs/25M/SRR1513330_2.fq -o ~/simulated_reads/fastqs/25nt/SRR1513329_2.fq
+cutadapt -u -77 ~/simulated_reads/fastqs/25M/SRR1513331_1.fq -o ~/simulated_reads/fastqs/25nt/SRR1513329_1.fq 
+cutadapt -u -77 ~/simulated_reads/fastqs/25M/SRR1513331_2.fq -o ~/simulated_reads/fastqs/25nt/SRR1513329_2.fq
+cutadapt -u -77 ~/simulated_reads/fastqs/25M/SRR1513329_switched_1.fq -o ~/simulated_reads/fastqs/25nt/SRR1513329_switched_1.fq 
+cutadapt -u -77 ~/simulated_reads/fastqs/25M/SRR1513329_switched_2.fq -o ~/simulated_reads/fastqs/25nt/SRR1513329_switched_2.fq
+cutadapt -u -77 ~/simulated_reads/fastqs/25M/SRR1513330_switched_1.fq -o ~/simulated_reads/fastqs/25nt/SRR1513330_switched_1.fq 
+cutadapt -u -77 ~/simulated_reads/fastqs/25M/SRR1513330_switched_2.fq -o ~/simulated_reads/fastqs/25nt/SRR1513330_switched_2.fq
+cutadapt -u -77 ~/simulated_reads/fastqs/25M/SRR1513331_switched_1.fq -o ~/simulated_reads/fastqs/25nt/SRR1513331_switched_1.fq 
+cutadapt -u -77 ~/simulated_reads/fastqs/25M/SRR1513331_switched_2.fq -o ~/simulated_reads/fastqs/25nt/SRR1513331_switched_2.fq
+
+
+#Trimm the reads at 50 nucleotides:
+cutadapt -u -52 ~/simulated_reads/fastqs/25M/SRR1513329_1.fq -o ~/simulated_reads/fastqs/50nt/SRR1513329_1.fq 
+cutadapt -u -52 ~/simulated_reads/fastqs/25M/SRR1513329_2.fq -o ~/simulated_reads/fastqs/50nt/SRR1513329_2.fq
+cutadapt -u -52 ~/simulated_reads/fastqs/25M/SRR1513330_1.fq -o ~/simulated_reads/fastqs/50nt/SRR1513329_1.fq 
+cutadapt -u -52 ~/simulated_reads/fastqs/25M/SRR1513330_2.fq -o ~/simulated_reads/fastqs/50nt/SRR1513329_2.fq
+cutadapt -u -52 ~/simulated_reads/fastqs/25M/SRR1513331_1.fq -o ~/simulated_reads/fastqs/50nt/SRR1513329_1.fq 
+cutadapt -u -52 ~/simulated_reads/fastqs/25M/SRR1513331_2.fq -o ~/simulated_reads/fastqs/50nt/SRR1513329_2.fq
+cutadapt -u -52 ~/simulated_reads/fastqs/25M/SRR1513329_switched_1.fq -o ~/simulated_reads/fastqs/50nt/SRR1513329_switched_1.fq 
+cutadapt -u -52 ~/simulated_reads/fastqs/25M/SRR1513329_switched_2.fq -o ~/simulated_reads/fastqs/50nt/SRR1513329_switched_2.fq
+cutadapt -u -52 ~/simulated_reads/fastqs/25M/SRR1513330_switched_1.fq -o ~/simulated_reads/fastqs/50nt/SRR1513330_switched_1.fq 
+cutadapt -u -52 ~/simulated_reads/fastqs/25M/SRR1513330_switched_2.fq -o ~/simulated_reads/fastqs/50nt/SRR1513330_switched_2.fq
+cutadapt -u -52 ~/simulated_reads/fastqs/25M/SRR1513331_switched_1.fq -o ~/simulated_reads/fastqs/50nt/SRR1513331_switched_1.fq 
+cutadapt -u -52 ~/simulated_reads/fastqs/25M/SRR1513331_switched_2.fq -o ~/simulated_reads/fastqs/50nt/SRR1513331_switched_2.fq
+
+
+#Trimm the reads at 75 nucleotides:
+cutadapt -u -27 ~/simulated_reads/fastqs/25M/SRR1513329_1.fq -o ~/simulated_reads/fastqs/75nt/SRR1513329_1.fq 
+cutadapt -u -27 ~/simulated_reads/fastqs/25M/SRR1513329_2.fq -o ~/simulated_reads/fastqs/75nt/SRR1513329_2.fq
+cutadapt -u -27 ~/simulated_reads/fastqs/25M/SRR1513330_1.fq -o ~/simulated_reads/fastqs/75nt/SRR1513329_1.fq 
+cutadapt -u -27 ~/simulated_reads/fastqs/25M/SRR1513330_2.fq -o ~/simulated_reads/fastqs/75nt/SRR1513329_2.fq
+cutadapt -u -27 ~/simulated_reads/fastqs/25M/SRR1513331_1.fq -o ~/simulated_reads/fastqs/75nt/SRR1513329_1.fq 
+cutadapt -u -27 ~/simulated_reads/fastqs/25M/SRR1513331_2.fq -o ~/simulated_reads/fastqs/75nt/SRR1513329_2.fq
+cutadapt -u -27 ~/simulated_reads/fastqs/25M/SRR1513329_switched_1.fq -o ~/simulated_reads/fastqs/75nt/SRR1513329_switched_1.fq 
+cutadapt -u -27 ~/simulated_reads/fastqs/25M/SRR1513329_switched_2.fq -o ~/simulated_reads/fastqs/75nt/SRR1513329_switched_2.fq
+cutadapt -u -27 ~/simulated_reads/fastqs/25M/SRR1513330_switched_1.fq -o ~/simulated_reads/fastqs/75nt/SRR1513330_switched_1.fq 
+cutadapt -u -27 ~/simulated_reads/fastqs/25M/SRR1513330_switched_2.fq -o ~/simulated_reads/fastqs/75nt/SRR1513330_switched_2.fq
+cutadapt -u -27 ~/simulated_reads/fastqs/25M/SRR1513331_switched_1.fq -o ~/simulated_reads/fastqs/75nt/SRR1513331_switched_1.fq 
+cutadapt -u -27 ~/simulated_reads/fastqs/25M/SRR1513331_switched_2.fq -o ~/simulated_reads/fastqs/75nt/SRR1513331_switched_2.fq
+
+
+#3.The commands ran for SUPPA, rMATS, DEXSeq and MAJIQ are the same as for tra2/commands.txt. In this case, the two conditions are the switched vs the non_switched TRA2 files
