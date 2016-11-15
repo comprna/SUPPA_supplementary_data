@@ -1,5 +1,5 @@
-# SUPPA_supplementary_data
-================================================
+### SUPPA_supplementary_data
+----------
 
 Supplementary data from:
 
@@ -11,7 +11,7 @@ The supplementary_data is stuctured in the following way:
 
   - **annotation/**: Ensembl and RefSeq files from hg19 and mm10 used for the quantification
   
-  - **supplementary_data/busskamp**: Commands used and events obtained with SUPPA, analyzing 4-day time-course data for the differentiation of human iPS cells into bipolar neurons¹
+  - **supplementary_data/busskamp**: Commands used and events obtained with SUPPA, analyzing 4-day time-course data for the differentiation of human iPS cells into bipolar neurons[#express]
   
   - **supplementary_data/erythro**: Commands used and events obtained comparing initial and final steps of differentiating human erythroblasts²
   
@@ -26,15 +26,13 @@ The supplementary_data is stuctured in the following way:
   
   
   
-  
-  
-  
-  
+  References
+---------- 
   
 
-[1] Busskamp, V. et al. Rapid neurogenesis through transcriptional activation in human stem cells. Mol. Syst. Biol. 10, 760 (2014).
+.. [#express] [1] Busskamp, V. et al. Rapid neurogenesis through transcriptional activation in human stem cells. Mol. Syst. Biol. 10, 760 (2014).
 
-[2] Pimentel, H. et al. A dynamic alternative splicing program regulates gene expression during terminal erythropoiesis. Nucleic Acids Res. 42, 4031–42 (2014).
+ [2] Pimentel, H. et al. A dynamic alternative splicing program regulates gene expression during terminal erythropoiesis. Nucleic Acids Res. 42, 4031–42 (2014).
 
 [3] Cole, B. S. et al. Global analysis of physical and functional RNA targets of hnRNP L reveals distinct sequence and epigenetic features of repressed and enhanced exons. RNA 21, 2053–66 (2015).
 
