@@ -1,5 +1,4 @@
-### SUPPA_supplementary_data
-----------
+# SUPPA_supplementary_data
 
 Supplementary data from:
 
@@ -26,13 +25,13 @@ The supplementary_data is stuctured in the following way:
   
   
   
-  References
+### References
 ---------- 
   
 
-.. [#express] [1] Busskamp, V. et al. Rapid neurogenesis through transcriptional activation in human stem cells. Mol. Syst. Biol. 10, 760 (2014).
+[1] Busskamp, V. et al. Rapid neurogenesis through transcriptional activation in human stem cells. Mol. Syst. Biol. 10, 760 (2014).
 
- [2] Pimentel, H. et al. A dynamic alternative splicing program regulates gene expression during terminal erythropoiesis. Nucleic Acids Res. 42, 4031–42 (2014).
+[2] Pimentel, H. et al. A dynamic alternative splicing program regulates gene expression during terminal erythropoiesis. Nucleic Acids Res. 42, 4031–42 (2014).
 
 [3] Cole, B. S. et al. Global analysis of physical and functional RNA targets of hnRNP L reveals distinct sequence and epigenetic features of repressed and enhanced exons. RNA 21, 2053–66 (2015).
 
