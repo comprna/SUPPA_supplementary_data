@@ -5,6 +5,8 @@ Supplementary data from:
 "Fast and accurate differential splicing analysis across multiple conditions with replicates"
 Juan C. Entizne, Juan L. Trincado, Gerald Hysenaj, Babita Singh, Miha Skalic, David J. Elliott, Eduardo Eyras
 
+Preprint available here: http://biorxiv.org/content/early/2016/11/10/086876
+
 
 The supplementary_data is stuctured in the following way:
 
