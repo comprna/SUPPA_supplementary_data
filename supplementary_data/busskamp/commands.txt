@@ -11,18 +11,18 @@
 	~/salmon-0.6.0/bin/salmon index -t ~/annotation/hg19_EnsenmblGenes_sequence_ensenmbl.fasta.fa -i ~/Ensembl_hg19_salmon_index
 
 	#1.2: Do the quantification (12 samples):
-	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554436_1.fastq -2 ~/SRR1554436_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554436
-	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554437_1.fastq -2 ~/SRR1554437_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554437
-	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554438_1.fastq -2 ~/SRR1554438_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554438
-	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554439_1.fastq -2 ~/SRR1554439_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554439
-	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554440_1.fastq -2 ~/SRR1554440_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554440
-	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554441_1.fastq -2 ~/SRR1554441_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554441
-	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554442_1.fastq -2 ~/SRR1554442_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554442
-	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554443_1.fastq -2 ~/SRR1554443_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554443
-	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554444_1.fastq -2 ~/SRR1554444_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554444
-	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554445_1.fastq -2 ~/SRR1554445_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554445
-	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554446_1.fastq -2 ~/SRR1554446_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554446
-	~/salmon-0.6.0/bin/salmon quant -i ~/refseq_hg19_salmon_index -l ISF -1 ~/SRR1554447_1.fastq -2 ~/SRR1554447_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554447
+	~/salmon-0.6.0/bin/salmon quant -i ~/Ensembl_hg19_salmon_index -l ISF -1 ~/SRR1554436_1.fastq -2 ~/SRR1554436_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554436
+	~/salmon-0.6.0/bin/salmon quant -i ~/Ensembl_hg19_salmon_index -l ISF -1 ~/SRR1554437_1.fastq -2 ~/SRR1554437_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554437
+	~/salmon-0.6.0/bin/salmon quant -i ~/Ensembl_hg19_salmon_index -l ISF -1 ~/SRR1554438_1.fastq -2 ~/SRR1554438_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554438
+	~/salmon-0.6.0/bin/salmon quant -i ~/Ensembl_hg19_salmon_index -l ISF -1 ~/SRR1554439_1.fastq -2 ~/SRR1554439_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554439
+	~/salmon-0.6.0/bin/salmon quant -i ~/Ensembl_hg19_salmon_index -l ISF -1 ~/SRR1554440_1.fastq -2 ~/SRR1554440_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554440
+	~/salmon-0.6.0/bin/salmon quant -i ~/Ensembl_hg19_salmon_index -l ISF -1 ~/SRR1554441_1.fastq -2 ~/SRR1554441_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554441
+	~/salmon-0.6.0/bin/salmon quant -i ~/Ensembl_hg19_salmon_index -l ISF -1 ~/SRR1554442_1.fastq -2 ~/SRR1554442_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554442
+	~/salmon-0.6.0/bin/salmon quant -i ~/Ensembl_hg19_salmon_index -l ISF -1 ~/SRR1554443_1.fastq -2 ~/SRR1554443_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554443
+	~/salmon-0.6.0/bin/salmon quant -i ~/Ensembl_hg19_salmon_index -l ISF -1 ~/SRR1554444_1.fastq -2 ~/SRR1554444_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554444
+	~/salmon-0.6.0/bin/salmon quant -i ~/Ensembl_hg19_salmon_index -l ISF -1 ~/SRR1554445_1.fastq -2 ~/SRR1554445_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554445
+	~/salmon-0.6.0/bin/salmon quant -i ~/Ensembl_hg19_salmon_index -l ISF -1 ~/SRR1554446_1.fastq -2 ~/SRR1554446_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554446
+	~/salmon-0.6.0/bin/salmon quant -i ~/Ensembl_hg19_salmon_index -l ISF -1 ~/SRR1554447_1.fastq -2 ~/SRR1554447_2.fastq -p 4 -o ~/Busskamp/Salmon/quantification/SRR1554447
 
 #########################
 #	SUPPA		#
