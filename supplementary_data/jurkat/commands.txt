@@ -33,30 +33,25 @@ SRR2060071.sra
 #2. Extract the TPM values from the Salmon output
 python ~/multipleFieldSelection.py -i ~/jurkat/Salmon/quantification/*/quant.sf -k 1 -f 4 -o ~/jurkat/Salmon/quantification/iso_tpm.txt
 
-#3. Before running SUPPA, we need to calculate the AS events on the hg19 annotation
+#3. Before running SUPPA, we need to calculate the AS events on the hg19 annotation (for RefSeq annotation, we will run with the -p option for pooling together overlapping transcripts) 
 	#3.1: Generate the events: 
-	python ~/suppa.py generateEvents -i ~/annotation/refseq_hg19.formatted.gtf -o ~/annotation/refseq_hg19.events -e SE SS MX RI FL
+	python ~/suppa.py generateEvents -p -i ~/annotation/refseq_hg19.formatted.gtf -o ~/annotation/refseq_hg19.events -e SE SS MX RI FL
 	#3.2: Put all the ioe events in the same file:
 	dir="~/annotation/"
 	for file in $(ls $dir| grep refseq_hg19.events | grep .ioe);do
 		echo "Processing $file..."
-		cat $dir/$file >> $dir/refseq_annotation_hg19.events_formatted.ioe
-	done
-	#3.3: Put all the gtf events in the same file:
-	for file in $(ls $dir| grep refseq_hg19.events | grep .gtf);do	
-		echo "Processing $file..."
-		cat $dir/$file >> $dir/refseq_hg19.events_formatted.gtf
+		cat $dir/$file >> $dir/refseq_hg19.events_formatted.pooled.ioe
 	done
 
 #4. Run SUPPA for getting the psi values of the events:
-python ~/suppa.py psiPerEvent -i ~/annotation/refseq_annotation_hg19.events_formatted.ioe -e ~/jurkat/Salmon/quantification/iso_tpm.txt -o ~/jurkat/SUPPA/events
+python ~/suppa.py psiPerEvent -i ~/annotation/refseq_hg19.events_formatted.pooled.ioe -e ~/jurkat/Salmon/quantification/iso_tpm.txt -o ~/jurkat/SUPPA/events
 
 #5. Run SUPPA for obtaining the Differential splicing analysis
-	#11.1: Split the PSI and TPM files between the 2 conditions
+	#5.1: Split the PSI and TPM files between the 2 conditions
 	~/scripts/split_file.R ~/jurkat/Salmon/quantification/iso_tpm.txt SRR2061036,SRR2061041 SRR2060068,SRR2060071 ~/jurkat/Salmon/quantification/jurkat_stimulated.tpm ~/jurkat/Salmon/quantification/jurkat_unstimulated.tpm      
 	~/scripts/split_file.R ~/jurkat/SUPPA/events.psi SRR2061036,SRR2061041 SRR2060068,SRR2060071 ~/jurkat/SUPPA/jurkat_stimulated.psi ~/jurkat/SUPPA/jurkat_unstimulated.psi
-	#11.2: Run SUPPA
-	python ~/suppa.py diffSplice -m empirical -i ~/annotation/refseq_annotation_hg19.events_formatted.ioe -e ~/jurkat/Salmon/quantification/jurkat_stimulated.tpm ~/jurkat/Salmon/quantification/jurkat_unstimulated.tpm -p ~/jurkat/SUPPA/jurkat_stimulated.psi ~/jurkat/SUPPA/jurkat_unstimulated.psi -o ~/jurkat/SUPPA/jurkat_unstimulated_stimulated
+	#5.2: Run SUPPA
+	python ~/suppa.py diffSplice -m empirical -i ~/annotation/refseq_hg19.events_formatted.pooled.ioe -e ~/jurkat/Salmon/quantification/jurkat_stimulated.tpm ~/jurkat/Salmon/quantification/jurkat_unstimulated.tpm -p ~/jurkat/SUPPA/jurkat_stimulated.psi ~/jurkat/SUPPA/jurkat_unstimulated.psi -o ~/jurkat/SUPPA/jurkat_unstimulated_stimulated
 
 #########################
 #	TOPHAT		# 

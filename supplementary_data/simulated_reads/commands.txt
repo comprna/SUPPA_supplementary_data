@@ -67,7 +67,18 @@ SRR1513331
 ~/RSEM-1.2.31/rsem-simulate-reads ~/tra2_simulated_reads/rsem_reference ~/simulated_reads/SRR1513331.model ~/simulated_reads/SRR1513331_switched.tpm 0.0987 5000000 ~/simulated_reads/fastqs/5M/SRR1513331_switched --seed 0
 
 
-#3.The commands ran for SUPPA, rMATS, DEXSeq and MAJIQ are the same as for tra2/commands.txt. In this case, the two conditions are the switched vs the non_switched TRA2 files
+###3. Before running SUPPA, we need to calculate the AS events on the hg19 annotation (for RefSeq annotation, we will run with the -p option for pooling together overlapping transcripts) 
+	#3.1: Generate the events: 
+	python ~/suppa.py generateEvents -p -i ~/annotation/refseq_hg19.formatted.gtf -o ~/annotation/refseq_hg19.events -e SE SS MX RI FL
+	#3.2: Put all the ioe events in the same file:
+	dir="~/annotation/"
+	for file in $(ls $dir| grep refseq_hg19.events | grep .ioe);do
+		echo "Processing $file..."
+		cat $dir/$file >> $dir/refseq_hg19.events_formatted.pooled.ioe
+	done
+
+
+###4.The commands ran for SUPPA, rMATS, DEXSeq and MAJIQ are the same as for tra2/commands.txt. In this case, the two conditions are the switched vs the non_switched TRA2 files
 
 
 
@@ -77,7 +88,7 @@ SRR1513331
 
 #At a 25 million reads depth, we simulate reads and trimm them at different lengths. Then, we study how this affects the performance of the methods
 
-#1. Using Cutadapt for trimming the reads
+###1. Using Cutadapt for trimming the reads
 
 #Trimm the reads at 25 nucleotides:
 cutadapt -u -77 ~/simulated_reads/fastqs/25M/SRR1513329_1.fq -o ~/simulated_reads/fastqs/25nt/SRR1513329_1.fq 
@@ -123,5 +134,20 @@ cutadapt -u -27 ~/simulated_reads/fastqs/25M/SRR1513330_switched_2.fq -o ~/simul
 cutadapt -u -27 ~/simulated_reads/fastqs/25M/SRR1513331_switched_1.fq -o ~/simulated_reads/fastqs/75nt/SRR1513331_switched_1.fq 
 cutadapt -u -27 ~/simulated_reads/fastqs/25M/SRR1513331_switched_2.fq -o ~/simulated_reads/fastqs/75nt/SRR1513331_switched_2.fq
 
+###2. Same annotation as in the previous step
 
-#3.The commands ran for SUPPA, rMATS, DEXSeq and MAJIQ are the same as for tra2/commands.txt. In this case, the two conditions are the switched vs the non_switched TRA2 files
+###3.The commands ran for SUPPA, rMATS, DEXSeq and MAJIQ are the same as for tra2/commands.txt. In this case, the two conditions are the switched vs the non_switched TRA2 files
+
+
+#################################
+#	Benchmark_hybrid	#
+#################################
+
+#In this benchmark, we will take replicates 1 and 2 from the 10M reads case and replicates 3 form 120M reads (for both conditions, 100nt read length)
+
+###2. Same annotation as in the previous step
+
+###3.The commands ran for SUPPA, rMATS, DEXSeq and MAJIQ are the same as for tra2/commands.txt. In this case, the two conditions are the switched vs the non_switched TRA2 files
+
+
+#TODO
