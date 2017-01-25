@@ -42,16 +42,10 @@ python ~/multipleFieldSelection.py -i ~/erythro/Salmon/quantification/*/quant.sf
 	#3.1: Generate the events: 
 	python ~/suppa.py generateEvents -i ~/annotation/Homo_sapiens.GRCh37.75.formatted.gtf -o ~/annotation/hg19_ensembl_events -e SE SS MX RI FL
 	#3.2: Put all the ioe events in the same file:
-	dir="~/annotation/"
-	for file in $(ls $dir| grep hg19_ensembl_events | grep .ioe);do
-		echo "Processing $file..."
-		cat $dir/$file >> $dir/hg19_ensembl_events_all_events.ioe
-	done
-	#3.3: Put all the gtf events in the same file:
-	for file in $(ls $dir| grep hg19_ensembl_events | grep .gtf);do	
-		echo "Processing $file..."
-		cat $dir/$file >> $dir/hg19_ensembl_events_all_events.gtf
-	done
+	awk '
+	    FNR==1 && NR!=1 { while (/^seqname/) getline; }
+	    1 {print}
+	' ./*ioe > ./hg19_ensembl_events_all_events.ioe
 
 
 #4. Run SUPPA for getting the psi values of the events:
