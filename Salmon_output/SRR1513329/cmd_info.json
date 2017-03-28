@@ -1,0 +1,11 @@
+{
+    "salmon_version": "0.8.1",
+    "index": "/homes/users/jtrincado/scratch/Bellmunt/Hedegaard/Salmon/index_Salmon_v.8.1_Ensembl_hg19",
+    "libType": "ISF",
+    "gcBias": [],
+    "mates1": "/homes/users/jtrincado/scratch/Master_class/fastqs/SRR1513329_1.fastq",
+    "mates2": "/homes/users/jtrincado/scratch/Master_class/fastqs/SRR1513329_2.fastq",
+    "threads": "8",
+    "output": "/homes/users/jtrincado/scratch/Master_class/Salmon/SRR1513329",
+    "auxDir": "aux_info"
+}

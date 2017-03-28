@@ -1,0 +1,21 @@
+{
+    "read_files": "( /homes/users/jtrincado/scratch/Master_class/fastqs/SRR1513333_1.fastq, /homes/users/jtrincado/scratch/Master_class/fastqs/SRR1513333_2.fastq )",
+    "expected_format": "ISF",
+    "compatible_fragment_ratio": 0.5070123039501899,
+    "num_compatible_fragments": 12476575,
+    "num_assigned_fragments": 24608032,
+    "num_consistent_mappings": 57379995,
+    "num_inconsistent_mappings": 57631301,
+    "MSF": 0,
+    "OSF": 22685,
+    "ISF": 57379995,
+    "MSR": 0,
+    "OSR": 22480,
+    "ISR": 56447782,
+    "SF": 476048,
+    "SR": 449464,
+    "MU": 0,
+    "OU": 0,
+    "IU": 0,
+    "U": 0
+}
