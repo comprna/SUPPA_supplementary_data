@@ -12,7 +12,7 @@ The supplementary_data is stuctured in the following way:
 
   - **annotation/**: Ensembl and RefSeq files from hg19 and mm10 used for the quantification
   
-  - **supplementary_data/busskamp**: Commands used and events obtained with SUPPA, analyzing 4-day time-course data for the differentiation of human iPS cells into bipolar neurons[#express]
+  - **supplementary_data/busskamp**: Commands used and events obtained with SUPPA, analyzing 4-day time-course data for the differentiation of human iPS cells into bipolar neurons¹
   
   - **supplementary_data/erythro**: Commands used and events obtained comparing initial and final steps of differentiating human erythroblasts²
   
