@@ -351,12 +351,10 @@ event_type <- unlist(lapply(unlist(lapply(as.character(PSI_all4_SE$event_id),fun
 PSI_all4_SE_TRUE <- PSI_all4_SE[which(PSI_all4_SE$significant=="TRUE"),]
 
 #277 for switching
-set.seed(1) #Set the seed for reproducibility
 sampling <- sample(1:nrow(PSI_all4_SE_TRUE), 277, replace=FALSE)
 positives <- PSI_all4_SE_TRUE[sampling,]
 #277 for non switching. We will generate a number at a time and check if we haven't already taken
 # that position for the positives
-set.seed(1) #Set the seed for reproducibility
 cont <- 0
 sampling2 <- integer(0)
 while(cont<277){
